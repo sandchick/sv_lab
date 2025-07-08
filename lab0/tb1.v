@@ -91,7 +91,7 @@ initial begin
   chnl_write(2, 'h00C2_0007);
   chnl_write(2, 'h00C2_0008);
   chnl_write(2, 'h00C2_0009);
-  #200
+  #100
   $finish;
 end
 
