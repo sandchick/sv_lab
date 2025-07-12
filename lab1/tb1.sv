@@ -1,23 +1,23 @@
 `timescale 1ns/1ps
 
 module tb1;
-reg          clk;
-reg          rstn;
-reg  [31:0]  ch0_data;
-reg          ch0_valid;
-wire         ch0_ready;
-wire [ 5:0]  ch0_margin;
-reg  [31:0]  ch1_data;
-reg          ch1_valid;
-wire         ch1_ready;
-wire [ 5:0]  ch1_margin;
-reg  [31:0]  ch2_data;
-reg          ch2_valid;
-wire         ch2_ready;
-wire [ 5:0]  ch2_margin;
-wire [31:0]  mcdt_data;
-wire         mcdt_val;
-wire [ 1:0]  mcdt_id;
+logic          clk;
+logic          rstn;
+logic  [31:0]  ch0_data;
+logic          ch0_valid;
+logic         ch0_ready;
+logic [ 5:0]  ch0_margin;
+logic  [31:0]  ch1_data;
+logic          ch1_valid;
+logic         ch1_ready;
+logic [ 5:0]  ch1_margin;
+logic  [31:0]  ch2_data;
+logic          ch2_valid;
+logic         ch2_ready;
+logic [ 5:0]  ch2_margin;
+logic [31:0]  mcdt_data;
+logic         mcdt_val;
+logic [ 1:0]  mcdt_id;
 
 mcdt dut(
    .clk_i(clk)
@@ -94,7 +94,7 @@ initial begin
 end
 
 // channel write task
-task chnl_write(input reg[1:0] id, input reg[31:0] data); 
+task chnl_write(input logic[1:0] id, input reg[31:0] data); 
   case(id)
     0: begin
       @(posedge clk);

@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+`timescale 1ns/1ns
 
 
 module chnl_initiator(
@@ -20,7 +20,9 @@ task chnl_write(input logic[31:0] data);
   // USER TODO
   // drive valid data
   // ...
-
+  @(posedge clk);
+  ch_valid <= 1;
+  ch_data <= data;
   $display("%t channel initial [%s] sent data %x", $time, name, data);
   chnl_idle();
 endtask
@@ -29,6 +31,9 @@ task chnl_idle();
   // USER TODO
   // drive idle data
   // ...
+  @(posedge clk);
+  ch_valid<= 0;
+  ch_data <= 0;
 
 endtask
 
@@ -94,7 +99,13 @@ logic [31:0] chnl2_arr[];
 // USER TODO
 // generate 100 data for each dynamic array
 initial begin
-  //...
+    //...
+    chnl0_arr = new[100];
+    chnl1_arr = new[100];
+    chnl2_arr = new[100];
+    foreach(chnl0_arr[j]) chnl0_arr[j] = 'h0000 + j;
+    foreach(chnl1_arr[j]) chnl1_arr[j] = 'h1000 + j;
+    foreach(chnl2_arr[j]) chnl2_arr[j] = 'h2000 + j;
 end
 
 // USER TODO

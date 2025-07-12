@@ -8,9 +8,8 @@ TIMESCALE = timescale=1ns/1ps
 all: gen_flist com sim verdi
 
 gen_flist:
-	#find ../MCDT/v0/ -wholename "*.v" > filelist.f
-	#find ./ -wholename "*.v" >> filelist.f
-	find ./ -wholename "*.sv" > filelist.f
+	find ../MCDT/v0/ -wholename "*.v" > filelist.f
+	echo "./tb3.sv" >> filelist.f
 
 com:
 	$(VCS) +v2k -sverilog \
@@ -28,6 +27,7 @@ sim:
 
 clean:clean_com clean_sim clean_verdi
 	rm -rf *.log
+	ls -l
 
 clean_com:
 	rm -rf csrc simv.daidir simv com.log
