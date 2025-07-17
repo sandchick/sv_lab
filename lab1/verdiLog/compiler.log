@@ -1,0 +1,24 @@
+*design* DebussyLib (btIdent Verdi_O-2018.09-SP2)
+Command arguments:
+    +define+verilog
+    +v2k
+    -sverilog
+    -f filelist.f
+        ../MCDT/v0/arbiter.v
+        ../MCDT/v0/mcdt.v
+        ../MCDT/v0/slave_fifo.v
+        ./tb4.sv
+
+Highest level modules:
+tb4
+
+
+*Warning* port sizes differ (5 vs 6) in port connection (port ch0_margin_o)
+"./tb4.sv", 69: 
+
+*Warning* port sizes differ (5 vs 6) in port connection (port ch1_margin_o)
+"./tb4.sv", 73: 
+
+*Warning* port sizes differ (5 vs 6) in port connection (port ch2_margin_o)
+"./tb4.sv", 77: 
+Total	0 error(s),   3 warning(s)

@@ -23,6 +23,8 @@ task chnl_write(input logic[31:0] data);
   @(posedge clk);
   ch_valid <= 1;
   ch_data <= data;
+  @(negedge clk);
+  wait(ch_ready == 'b1);
   $display("%t channel initial [%s] sent data %x", $time, name, data);
   chnl_idle();
 endtask
@@ -117,28 +119,24 @@ initial begin
   // USER TODO
   // Give unique names to each channel initiator
   // ...
+  chnl0_init.set_name("chnl0_init");
+  chnl1_init.set_name("chnl1_init");
+  chnl2_init.set_name("chnl2_init");
 
 
   // channel 0 test
   // TODO use chnl0_arr to send all data
-  chnl0_init.chnl_write('h00C0_0000);
-  chnl0_init.chnl_write('h00C0_0001);
-  chnl0_init.chnl_write('h00C0_0002);
-  chnl0_init.chnl_write('h00C0_0003);
+  foreach(chnl0_arr[i]) chnl0_init.chnl_write(chnl0_arr[i]);
 
   // channel 1 test
   // TODO use chnl1_arr to send all data
-  chnl1_init.chnl_write('h00C1_0000);
-  chnl1_init.chnl_write('h00C1_0001);
-  chnl1_init.chnl_write('h00C1_0002);
-  chnl1_init.chnl_write('h00C1_0003);
+  foreach(chnl1_arr[i]) chnl1_init.chnl_write(chnl1_arr[i]);
 
   // channel 2 test
   // TODO use chnl2_arr to send all data
-  chnl2_init.chnl_write('h00C2_0000);
-  chnl2_init.chnl_write('h00C2_0001);
-  chnl2_init.chnl_write('h00C2_0002);
-  chnl2_init.chnl_write('h00C2_0003);
+  foreach(chnl2_arr[i]) chnl2_init.chnl_write(chnl2_arr[i]);
+  #100ns
+  $finish;
 end
 
 chnl_initiator chnl0_init(

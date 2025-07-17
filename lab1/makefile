@@ -9,7 +9,7 @@ all: gen_flist com sim verdi
 
 gen_flist:
 	find ../MCDT/v0/ -wholename "*.v" > filelist.f
-	echo "./tb3.sv" >> filelist.f
+	echo "./tb4.sv" >> filelist.f
 
 com:
 	$(VCS) +v2k -sverilog \

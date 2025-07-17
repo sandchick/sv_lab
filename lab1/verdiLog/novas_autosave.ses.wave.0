@@ -1,0 +1,188 @@
+Magic 271485
+Revision Verdi_O-2018.09-SP2
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 27 1548 383 100 65
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/home/loaf/ichome/dv/sv_lab/lab1/wave.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 0.000000 6317550.000000
+cursor 3605000.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 123
+; marker line index
+markerPos 134
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "/home/loaf/ichome/dv/sv_lab/lab1/wave.fsdb"
+addSignal -h 15 /tb4/ch0_data[31:0]
+addSignal -h 15 -holdScope ch0_margin[5:0]
+addSignal -h 15 -holdScope ch0_ready
+addSignal -h 15 -holdScope ch0_valid
+addSignal -h 15 -holdScope ch1_data[31:0]
+addSignal -h 15 -holdScope ch1_margin[5:0]
+addSignal -h 15 -holdScope ch1_ready
+addSignal -h 15 -holdScope ch1_valid
+addSignal -h 15 -holdScope ch2_data[31:0]
+addSignal -h 15 -holdScope ch2_margin[5:0]
+addSignal -h 15 -holdScope ch2_ready
+addSignal -h 15 -holdScope ch2_valid
+addSignal -h 15 -holdScope clk
+addSignal -h 15 -holdScope mcdt_data[31:0]
+addSignal -h 15 -holdScope mcdt_id[1:0]
+addSignal -h 15 -holdScope mcdt_val
+addSignal -h 15 -holdScope rstn
+addSignal -h 15 /tb4/chnl0_init/ch_data[31:0]
+addSignal -h 15 -holdScope ch_margin[5:0]
+addSignal -h 15 -holdScope ch_ready
+addSignal -h 15 -holdScope ch_valid
+addSignal -h 15 -holdScope clk
+addSignal -h 15 -holdScope rstn
+addSignal -h 15 /tb4/chnl1_init/ch_data[31:0]
+addSignal -h 15 -holdScope ch_margin[5:0]
+addSignal -h 15 -holdScope ch_ready
+addSignal -h 15 -holdScope ch_valid
+addSignal -h 15 -holdScope clk
+addSignal -h 15 -holdScope rstn
+addSignal -h 15 /tb4/chnl2_init/ch_data[31:0]
+addSignal -h 15 -holdScope ch_margin[5:0]
+addSignal -h 15 -holdScope ch_ready
+addSignal -h 15 -holdScope ch_valid
+addSignal -h 15 -holdScope clk
+addSignal -h 15 -holdScope rstn
+addSignal -h 15 /tb4/dut/a2s0_ack_s
+addSignal -h 15 -holdScope a2s1_ack_s
+addSignal -h 15 -holdScope a2s2_ack_s
+addSignal -h 15 -holdScope ch0_data_i[31:0]
+addSignal -h 15 -holdScope ch0_margin_o[4:0]
+addSignal -h 15 -holdScope ch0_ready_o
+addSignal -h 15 -holdScope ch0_valid_i
+addSignal -h 15 -holdScope ch1_data_i[31:0]
+addSignal -h 15 -holdScope ch1_margin_o[4:0]
+addSignal -h 15 -holdScope ch1_ready_o
+addSignal -h 15 -holdScope ch1_valid_i
+addSignal -h 15 -holdScope ch2_data_i[31:0]
+addSignal -h 15 -holdScope ch2_margin_o[4:0]
+addSignal -h 15 -holdScope ch2_ready_o
+addSignal -h 15 -holdScope ch2_valid_i
+addSignal -h 15 -holdScope clk_i
+addSignal -h 15 -holdScope mcdt_data_o[31:0]
+addSignal -h 15 -holdScope mcdt_id_o[1:0]
+addSignal -h 15 -holdScope mcdt_val_o
+addSignal -h 15 -holdScope rstn_i
+addSignal -h 15 -holdScope slv0_data_s[31:0]
+addSignal -h 15 -holdScope slv0_req_s
+addSignal -h 15 -holdScope slv0_val_s
+addSignal -h 15 -holdScope slv1_data_s[31:0]
+addSignal -h 15 -holdScope slv1_req_s
+addSignal -h 15 -holdScope slv1_val_s
+addSignal -h 15 -holdScope slv2_data_s[31:0]
+addSignal -h 15 -holdScope slv2_req_s
+addSignal -h 15 -holdScope slv2_val_s
+addSignal -h 15 /tb4/dut/inst_arbiter/a2s0_ack_o
+addSignal -h 15 -holdScope a2s1_ack_o
+addSignal -h 15 -holdScope a2s2_ack_o
+addSignal -h 15 -holdScope arb_data_o[31:0]
+addSignal -h 15 -holdScope arb_data_r[31:0]
+addSignal -h 15 -holdScope arb_id_o[1:0]
+addSignal -h 15 -holdScope arb_id_r[1:0]
+addSignal -h 15 -holdScope c_state[2:0]
+addSignal -h 15 -holdScope clk_i
+addSignal -h 15 -holdScope data_val_o
+addSignal -h 15 -holdScope data_val_r
+addSignal -h 15 -holdScope n_state[2:0]
+addSignal -h 15 -holdScope rstn_i
+addSignal -h 15 -holdScope slv0_data_i[31:0]
+addSignal -h 15 -holdScope slv0_req_i
+addSignal -h 15 -holdScope slv0_val_i
+addSignal -h 15 -holdScope slv1_data_i[31:0]
+addSignal -h 15 -holdScope slv1_req_i
+addSignal -h 15 -holdScope slv1_val_i
+addSignal -h 15 -holdScope slv2_data_i[31:0]
+addSignal -h 15 -holdScope slv2_req_i
+addSignal -h 15 -holdScope slv2_val_i
+addSignal -h 15 /tb4/dut/inst_slva_fifo_0/a2sx_ack_i
+addSignal -h 15 -holdScope chx_data_i[31:0]
+addSignal -h 15 -holdScope chx_ready_o
+addSignal -h 15 -holdScope chx_valid_i
+addSignal -h 15 -holdScope clk_i
+addSignal -h 15 -holdScope data_cnt_s[4:0]
+addSignal -h 15 -holdScope empty_s
+addSignal -h 15 -holdScope full_s
+addSignal -h 15 -holdScope rd_en_s
+addSignal -h 15 -holdScope rd_pointer_r[5:0]
+addSignal -h 15 -holdScope rstn_i
+addSignal -h 15 -holdScope slvx_data_o[31:0]
+addSignal -h 15 -holdScope slvx_margin_o[4:0]
+addSignal -h 15 -holdScope slvx_req_o
+addSignal -h 15 -holdScope slvx_val_o
+addSignal -h 15 -holdScope wr_pointer_r[5:0]
+addSignal -h 15 /tb4/dut/inst_slva_fifo_1/a2sx_ack_i
+addSignal -h 15 -holdScope chx_data_i[31:0]
+addSignal -h 15 -holdScope chx_ready_o
+addSignal -h 15 -holdScope chx_valid_i
+addSignal -h 15 -holdScope clk_i
+addSignal -h 15 -holdScope data_cnt_s[4:0]
+addSignal -h 15 -holdScope empty_s
+addSignal -h 15 -holdScope full_s
+addSignal -h 15 -holdScope rd_en_s
+addSignal -h 15 -holdScope rd_pointer_r[5:0]
+addSignal -h 15 -holdScope rstn_i
+addSignal -h 15 -holdScope slvx_data_o[31:0]
+addSignal -h 15 -holdScope slvx_margin_o[4:0]
+addSignal -h 15 -holdScope slvx_req_o
+addSignal -h 15 -holdScope slvx_val_o
+addSignal -h 15 -holdScope wr_pointer_r[5:0]
+addSignal -h 15 /tb4/dut/inst_slva_fifo_2/a2sx_ack_i
+addSignal -h 15 -holdScope chx_data_i[31:0]
+addSignal -h 15 -holdScope chx_ready_o
+addSignal -h 15 -holdScope chx_valid_i
+addSignal -h 15 -holdScope clk_i
+addSignal -h 15 -holdScope data_cnt_s[4:0]
+addSignal -h 15 -holdScope empty_s
+addSignal -h 15 -holdScope full_s
+addSignal -h 15 -holdScope rd_en_s
+addSignal -h 15 -holdScope rd_pointer_r[5:0]
+addSignal -h 15 -holdScope rstn_i
+addSignal -h 15 -holdScope slvx_data_o[31:0]
+addSignal -h 15 -holdScope slvx_margin_o[4:0]
+addSignal -h 15 -holdScope slvx_req_o
+addSignal -h 15 -holdScope slvx_val_o
+addSignal -h 15 -holdScope wr_pointer_r[5:0]
+addGroup "G2"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+

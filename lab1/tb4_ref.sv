@@ -120,8 +120,8 @@ initial begin
   // Give unique names to each channel initiator
   // ...
   chnl0_init.set_name("chnl0_init");
-  chnl1_init.set_name("chnl0_init");
-  chnl2_init.set_name("chnl0_init");
+  chnl1_init.set_name("chnl1_init");
+  chnl2_init.set_name("chnl2_init");
   
   // channel 0 test
   // TODO use chnl0_arr to send all data
