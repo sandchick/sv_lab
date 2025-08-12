@@ -192,7 +192,7 @@ module tb2_ref;
   // have been reached fifo full state, but not all reaching
   // fifo full at the same time
   task automatic fifo_full_test();
-    // verification component initializationi
+    // verification component initialization
     chnl0_gen.initialize(0);
     chnl1_gen.initialize(1);
     chnl2_gen.initialize(2);

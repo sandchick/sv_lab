@@ -25,21 +25,22 @@ module chnl_initiator(chnl_intf intf);
     @(posedge intf.clk);
     // USER TODO 1.1
     // Please use the clocking drv_ck of chnl_intf to drive data
-    intf.ch_valid <= 1;
-    intf.ch_data <= data;
+    intf.drv_ck.ch_valid <= 1;
+    intf.drv_ck.ch_data <= data;
+    @(negedge intf.clk);
     wait(intf.ch_ready === 'b1);
     $display("%t channel initiator [%s] sent data %x", $time, name, data);
     // USER TODO 1.2
     // Apply variable idle_cycles and decide how many idle cycles to be
     // inserted between two sequential data
-    chnl_idle();
+    repeat(idle_cycles) chnl_idle();
   endtask
   task automatic chnl_idle();
     @(posedge intf.clk);
     // USER TODO 1.1
     // Please use the clocking drv_ck of chnl_intf to drive data
-    intf.ch_valid <= 0;
-    intf.ch_data <= 0;
+    intf.drv_ck.ch_valid <= 0;
+    intf.drv_ck.ch_data <= 0;
   endtask
 endmodule
 

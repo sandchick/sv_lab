@@ -1,3 +1,0 @@
-Command Line: /eda/verdi/Verdi_O-2018.09-SP2/platform/LINUXAMD64/bin/Novas +v2k -sverilog -f filelist.f -ssf ./wave.fsdb -sswr ./signal.rc
-uname(Linux loaf1ng 5.15.167.4-microsoft-standard-WSL2 #1 SMP Tue Nov 5 00:21:55 UTC 2024 x86_64)
-au time 252817.846684 10.719820 7.540417 delta 829214720 829214720 total 1204822016 1204822016

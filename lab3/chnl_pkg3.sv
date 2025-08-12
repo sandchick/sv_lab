@@ -1,6 +1,6 @@
 package chnl_pkg3;
   class chnl_trans;
-    rand bit[31:0] data[];
+e   rand bit[31:0] data[];
     rand int ch_id;
     rand int pkt_id;
     rand int data_nidles;

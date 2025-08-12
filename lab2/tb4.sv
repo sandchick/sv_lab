@@ -48,22 +48,23 @@ package chnl_pkg;
       @(posedge intf.clk);
       // USER TODO 1.1
       // Please use the clocking drv_ck of chnl_intf to drive data
-      intf.ch_valid <= 1;
-      intf.ch_data <= t.data;
-      wait(intf.ch_ready === 'b1);
+      intf.drv_ck.ch_valid <= 1;
+      intf.drv_ck.ch_data <= t.data;
+      @(negedge intf.clk);
+      wait(intf.ch_ready === 'b1); 
       $display("%t channel initiator [%s] sent data %x", $time, name, t.data);
       // USER TODO 1.2
       // Apply variable idle_cycles and decide how many idle cycles to be
       // inserted between two sequential data
-      chnl_idle();
+      repeat(this.idle_cycles) chnl_idle();
     endtask
     
     task chnl_idle();
       @(posedge intf.clk);
       // USER TODO 1.1
       // Please use the clocking drv_ck of chnl_intf to drive data
-      intf.ch_valid <= 0;
-      intf.ch_data <= 0;
+      intf.drv_ck.ch_valid <= 0;
+      intf.drv_ck.ch_data <= 0;
     endtask
   endclass: chnl_initiator
   
@@ -90,7 +91,7 @@ package chnl_pkg;
     chnl_generator gen;
     chnl_initiator init;
     local int ntrans;
-    local virtual chnl_intf vif;
+    virtual chnl_intf vif;
     function new(string name = "chnl_agent", int id = 0, int ntrans = 1);
       this.gen = new(id);
       this.init = new(name);
@@ -105,6 +106,7 @@ package chnl_pkg;
     endfunction
     task run();
       repeat(this.ntrans) this.init.chnl_write(this.gen.get_trans());
+      this.init.chnl_idle(); // set idle after all data sent out
     endtask
   endclass: chnl_agent
 
@@ -154,7 +156,13 @@ package chnl_pkg;
   // each channel send out 500 data
   // then to finish the test
   class chnl_burst_test extends chnl_root_test;
-    //USER TODO
+      function new(int ntrans = 500, string name = "chnl_burst_test");
+          super.new(ntrans,name);
+          foreach(agent[i]) begin
+              this.agent[i].init.set_idle_cycles(0);
+          end
+          $display("%s configured objects", this.name);
+      endfunction
   endclass: chnl_burst_test
 
   // USER TODO 4.2
@@ -162,7 +170,48 @@ package chnl_pkg;
   // have been reached fifo full state, but not all reaching
   // fifo full at the same time
   class chnl_fifo_full_test extends chnl_root_test;
-    // USER TODO
+      function new(int ntrans = 100_0000, string name = "chnl_fifo_full_test");
+          super.new(ntrans,name);
+          foreach(agent[i]) begin
+              this.agent[i].init.set_idle_cycles(0);
+          end
+          $display("$s configured objects", this.name);
+      endfunction
+      task run();
+          $display("$s started testing DUT", this.name);
+          fork: fork_all_run
+              agent[0].run();
+              agent[1].run();
+              agent[2].run();
+          join_none
+          $display("%s: 3 agents running now", this.name);
+
+          $display("%s: waiting 3 channel fifos to be full", this.name);
+          fork
+              wait(agent[0].vif.ch_margin == 0);
+              wait(agent[1].vif.ch_margin == 0);
+              wait(agent[2].vif.ch_margin == 0);
+          join
+          $display("%s: 3 channel fifos have reached full", this.name);
+
+          $display("%s: stop 3 agents running", this.name);
+          disable fork_all_run;
+          $display("%s: set and ensure all agents' initiator are idle state", this.name);
+          fork
+              agent[0].init.chnl_idle();
+              agent[1].init.chnl_idle();
+              agent[2].init.chnl_idle();
+          join
+
+          $display("%s waiting DUT transfering all of data", this.name);
+          fork
+              wait(agent[0].vif.ch_margin == 'h20);
+              wait(agent[1].vif.ch_margin == 'h20);
+              wait(agent[2].vif.ch_margin == 'h20);
+          join
+          $display("%s 3 channel fifos have transfered all of data", this.name);
+          $display("%s finished testing DUT", this.name);
+      endtask
   endclass: chnl_fifo_full_test
 
 endpackage: chnl_pkg
@@ -212,6 +261,7 @@ module tb4;
 
   // USER TODO 4.1
   // import defined class from chnl_pkg
+  import chnl_pkg::*;
 
   chnl_intf chnl0_if(.*);
   chnl_intf chnl1_if(.*);
@@ -224,16 +274,25 @@ module tb4;
   initial begin 
     // USER TODO 4.3
     // Instantiate the three test environment
+    basic_test = new();
+    burst_test = new();
+    fifo_full_test = new();
 
     // USER TODO 4.4
     // assign the interface handle to each chnl_initiator objects
+    basic_test.set_interface(chnl0_if, chnl1_if, chnl2_if);
+    burst_test.set_interface(chnl0_if, chnl1_if, chnl2_if);
+    fifo_full_test.set_interface(chnl0_if, chnl1_if, chnl2_if);
+
 
     // USER TODO 4.5
     // START TESTs
+    basic_test.run();
+    burst_test.run();
+    fifo_full_test.run();
     $display("*****************all of tests have been finished********************");
     $finish();
   end
-
 
 endmodule
 
