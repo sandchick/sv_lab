@@ -1,4 +1,5 @@
 package chnl_pkg1;
+
   class chnl_trans;
     rand bit[31:0] data[];
     rand int ch_id;
@@ -10,7 +11,7 @@ package chnl_pkg1;
     // USER TODO 1.1.
     // Specify constraint to match the chnl_basic_test request
     constraint cstr{
-      data.size inside {[4:8]};
+      soft data.size inside {[4:8]};
       foreach(data[i]) data[i] == 'hC000_0000 + (this.ch_id<<24) + (this.pkt_id<<8) + i;
       soft ch_id == 0;
       soft pkt_id == 0;
@@ -32,6 +33,7 @@ package chnl_pkg1;
       c.rsp = this.rsp;
       // USER TODO 1.2
       // Could we put c.obj_id = this.obj_id here? and why?
+      // when c = new() , c.obj_id have been ++, so we can't put
       return c;
     endfunction
 
@@ -169,6 +171,7 @@ package chnl_pkg1;
     chnl_agent agent[3];
     protected string name;
     function new(int ntrans = 100, string name = "chnl_root_test");
+      $display($sformatf("test write repeat time %0d" ,ntrans));
       foreach(agent[i]) begin
         this.agent[i] = new($sformatf("chnl_agent%0d",i), i, ntrans);
       end
@@ -183,11 +186,9 @@ package chnl_pkg1;
         agent[2].run();
       join
       $display($sformatf("*****************%s finished********************", this.name));
-      // USER TODO 1.3
-      // Please move the $finish statement from the test run task to generator
-      // You woudl put it anywhere you like inside generator to stop test when
-      // all transactions have been transfered
+
       $finish();
+
       // USER TODO 1.4
       // Apply 'vsim -novopt -solvefaildebug -sv_seed 0 work.tb1' to run the
       // simulation, and check if the generated data is the same as previously

@@ -201,6 +201,8 @@ package chnl_pkg2;
         this.gen[i] = new();
         // USER TODO 2.1
         // Connect the mailboxes handles of gen[i] and agent[i].init
+        this.agent[i].init.req_mb = this.gen[i].req_mb;
+        this.agent[i].init.rsp_mb = this.gen[i].rsp_mb;
       end
       this.name = name;
       $display("%s instantiate objects", this.name);
@@ -242,10 +244,14 @@ package chnl_pkg2;
       // To randomize gen[1] with
       // ntrans==50, data_nidles inside [1:2], pkt_nidles inside [3:5],
       // data_size == 6
+      assert(gen[1].randomize() with {ntrans==50; data_nidles inside [1:2], pkt_nidles inside [3:5]; data_size==6;})
+        else $fatal("[RNDFAIL] gen[1] randomization failure!");
 
       // USER TODO 2.3
       // ntrans==80, data_nidles inside [0:1], pkt_nidles inside [1:2],
       // data_size == 32
+      assert(gen[2].randomize() with {ntrans==80; data_nidles inside [0:1], pkt_nidles inside [1:2]; data_size==32;})
+        else $fatal("[RNDFAIL] gen[2] randomization failure!");
     endfunction
   endclass
 
@@ -262,6 +268,13 @@ package chnl_pkg2;
     function new(string name = "chnl_burst_test");
       super.new(name);
     endfunction
+    virtual function void do_config();
+    super.do_config();
+    foreach(gen[i]) begin
+        assert(gen[i].randomize() with {ntrans inside [80:100]; data_nidles==0;pkt_nidles==0; pkt_nidles==1; data_size inside {8,12,32};})
+        else $fatal("[RNDFAIL] gen[%0d] randomization failure!",i);
+    end
+  endfunction
     //USER TODO
   endclass: chnl_burst_test
 
