@@ -1,6 +1,9 @@
 package chnl_pkg3;
+
+  semaphore run_stop_flags = new();
+
   class chnl_trans;
-e   rand bit[31:0] data[];
+    rand bit[31:0] data[];
     rand int ch_id;
     rand int pkt_id;
     rand int data_nidles;
@@ -8,7 +11,7 @@ e   rand bit[31:0] data[];
     bit rsp;
     local static int obj_id = 0;
     constraint cstr{
-      data.size inside {[4:8]};
+      soft data.size inside {[4:8]};
       foreach(data[i]) data[i] == 'hC000_0000 + (this.ch_id<<24) + (this.pkt_id<<8) + i;
       soft ch_id == 0;
       soft pkt_id == 0;
@@ -126,6 +129,7 @@ e   rand bit[31:0] data[];
 
     task run();
       repeat(ntrans) send_trans();
+      run_stop_flags.put();
     endtask
 
     // generate transaction and put into local mailbox
@@ -198,6 +202,9 @@ e   rand bit[31:0] data[];
         // USER TODO 3.1
         // Put the data into the mon_mb and use $display() to print the stored
         // data value with monitor name
+        m.data = intf.mon_ck.ch_data;
+        mon_mb.put(m);
+        $display("%0t %s monitored channle data %8x", $time, this.name, m.data);
       end
     endtask
   endclass
@@ -227,6 +234,10 @@ e   rand bit[31:0] data[];
         // USER TODO 3.1
         // Put the data into the mon_mb and use $display() to print the stored
         // data value with monitor name
+        m.data = intf.mon_ck.mcdt_data;
+        m.id = intf.mon_ck.mcdt_id;
+        mon_mb.put(m);
+        $display("%0t %s monitored channle data %8x and id %0d", $time, this.name, m.data, m.id);
       end
     endtask
   endclass
@@ -238,19 +249,22 @@ e   rand bit[31:0] data[];
     // USER TODO 3.2
     // Refer to how we create, set virtual interface and run the initiator
     // object, use do the similar action to the monitor object
-    local virtual chnl_intf vif;
+    virtual chnl_intf vif;
     function new(string name = "chnl_agent");
       this.name = name;
       this.init = new({name, ".init"});
+      this.mon = new({name, ".mon"});
     endfunction
 
     function void set_interface(virtual chnl_intf vif);
       this.vif = vif;
       init.set_interface(vif);
+      mon.set_interface(vif);
     endfunction
     task run();
       fork
         init.run();
+        mon.run();
       join
     endtask
   endclass: chnl_agent
@@ -258,7 +272,7 @@ e   rand bit[31:0] data[];
   class chnl_checker;
     local string name;
     local int error_count;
-    local int cmp_count;
+    int cmp_count;
     mailbox #(mon_data_t) in_mbs[3];
     mailbox #(mon_data_t) out_mb;
 
@@ -281,13 +295,20 @@ e   rand bit[31:0] data[];
         // USER TODO 3.3
         // compare data once there is data in in_mb0/in_mb1/in_mb2 and out_mb
         // first, get om from out_mb, and im from one of in_mbs
+        out_mb.get(om);
+        case(om.id)
+            0: in_mbs[0].get(im);
+            1: in_mbs[1].get(im);
+            2: in_mbs[2].get(im);
+            default:$fatal("id %0d is not available", om.id);
+        endcase
 
         if(om.data != im.data) begin
           this.error_count++;
           $error("[CMPFAIL] Compared failed! mcdt out data %8x ch_id %0d is not equal with channel in data %8x", om.data, om.id, im.data);
         end
         else begin
-          $display("[CMPSUCD] Compared succeeded! mcdt out data %8x ch_id %0d is not equal with channel in data %8x", om.data, om.id, im.data);
+          $display("[CMPSUCD] Compared succeeded! mcdt out data %8x ch_id %0d is equal with channel in data %8x", om.data, om.id, im.data);
         end
         this.cmp_count++;
       end
@@ -303,9 +324,11 @@ e   rand bit[31:0] data[];
     mcdt_monitor mcdt_mon;
     chnl_checker chker;
     protected string name;
+    event gen_stop_e;
 
     function new(string name = "chnl_root_test");
       this.name = name;
+      this.chker = new();
       foreach(agents[i]) begin
         this.agents[i] = new($sformatf("chnl_agent%0d",i));
         this.gen[i] = new();
@@ -313,9 +336,24 @@ e   rand bit[31:0] data[];
         // Connect the mailboxes handles of gen[i] and agents[i].init
         this.agents[i].init.req_mb = this.gen[i].req_mb;
         this.agents[i].init.rsp_mb = this.gen[i].rsp_mb;
+        this.agents[i].mon.mon_mb = this.chker.in_mbs[i];
       end
+      this.mcdt_mon = new();
+      this.mcdt_mon.mon_mb = this.chker.out_mb;
       $display("%s instantiated and connected objects", this.name);
     endfunction
+
+    virtual task gen_stop_callback();
+    endtask
+
+    virtual task run_stop_callback();
+      $display("run_stop_callback enterred");
+      $display("%s: wait for all generators have generated and transferred transcations", this.name);
+      run_stop_flags.get(3);
+      $display("%0d mailboxs have been compared", this.chker.cmp_count);
+      $display($sformatf("*****************%s finished********************", this.name));
+      $finish();
+    endtask
 
     virtual task run();
       $display($sformatf("*****************%s started********************", this.name));
@@ -324,18 +362,28 @@ e   rand bit[31:0] data[];
         agents[0].run();
         agents[1].run();
         agents[2].run();
+        mcdt_mon.run();
+        chker.run();
       join_none
+
       fork
+        this.gen_stop_callback();
+        @(this.gen_stop_e) disable gen_threads;
+      join_none
+
+      fork : gen_threads
         gen[0].run();
         gen[1].run();
         gen[2].run();
       join
-      $display($sformatf("*****************%s finished********************", this.name));
       // USER TODO 1.3
       // Please move the $finish statement from the test run task to generator
       // You woudl put it anywhere you like inside generator to stop test when
       // all transactions have been transfered
-      $finish();
+        
+      run_stop_callback();
+
+
     endtask
 
     virtual function void set_interface(virtual chnl_intf ch0_vif 
@@ -346,6 +394,7 @@ e   rand bit[31:0] data[];
       agents[0].set_interface(ch0_vif);
       agents[1].set_interface(ch1_vif);
       agents[2].set_interface(ch2_vif);
+      mcdt_mon.set_interface(mcdt_vif);
     endfunction
 
     virtual function void do_config();
@@ -366,10 +415,14 @@ e   rand bit[31:0] data[];
       // To randomize gen[1] with
       // ntrans==50, data_nidles inside [1:2], pkt_nidles inside [3:5],
       // data_size == 6
+      assert(gen[1].randomize() with {ntrans==50; data_nidles inside{[1:2]}; pkt_nidles inside {[3:5]}; data_size==6;})
+        else $fatal("[RNDFAIL] gen[1] randomization failure!");
 
       // USER TODO 2.3
       // ntrans==80, data_nidles inside [0:1], pkt_nidles inside [1:2],
       // data_size == 32
+      assert(gen[2].randomize() with {ntrans==80; data_nidles inside{[0:1]}; pkt_nidles inside {[1:2]}; data_size==32;})
+        else $fatal("[RNDFAIL] gen[2] randomization failure!");
     endfunction
   endclass: chnl_basic_test
 
@@ -379,6 +432,15 @@ e   rand bit[31:0] data[];
   class chnl_burst_test extends chnl_root_test;
     function new(string name = "chnl_burst_test");
       super.new(name);
+    endfunction
+    virtual function void do_config();
+      super.do_config();
+      assert(gen[0].randomize() with {ntrans inside {[80:100]}; data_nidles==0; pkt_nidles==1; data_size inside {8,16,32};})
+        else $fatal("[RNDFAIL] gen[0] randomization failure!");
+      assert(gen[1].randomize() with {ntrans inside {[80:100]}; data_nidles==0; pkt_nidles==1; data_size inside {8,16,32};})
+        else $fatal("[RNDFAIL] gen[1] randomization failure!");
+      assert(gen[2].randomize() with {ntrans inside {[80:100]}; data_nidles==0; pkt_nidles==1; data_size inside {8,16,32};})
+        else $fatal("[RNDFAIL] gen[2] randomization failure!");
     endfunction
   endclass: chnl_burst_test
 
@@ -390,6 +452,51 @@ e   rand bit[31:0] data[];
     function new(string name = "chnl_fifo_full_test");
       super.new(name);
     endfunction
+    virtual function void do_config();
+      super.do_config();
+      assert(gen[0].randomize() with {ntrans inside {[1000:2000]}; data_nidles==0; pkt_nidles==1; data_size inside {8,16,32};})
+        else $fatal("[RNDFAIL] gen[0] randomization failure!");
+      assert(gen[1].randomize() with {ntrans inside {[1000:2000]}; data_nidles==0; pkt_nidles==1; data_size inside {8,16,32};})
+        else $fatal("[RNDFAIL] gen[1] randomization failure!");
+      assert(gen[2].randomize() with {ntrans inside {[1000:2000]}; data_nidles==0; pkt_nidles==1; data_size inside {8,16,32};})
+        else $fatal("[RNDFAIL] gen[2] randomization failure!");
+    endfunction
+
+    local function bit[3] get_chnl_ready_flags();
+      return {agents[2].vif.mon_ck.ch_ready,
+              agents[1].vif.mon_ck.ch_ready,
+              agents[0].vif.mon_ck.ch_ready
+          };
+    endfunction
+
+    virtual task gen_stop_callback();
+      bit[3] chnl_ready_flags;
+      $display("gen_stop_callback enterred");
+      @(posedge agents[0].vif.rstn);
+      forever begin
+        @(posedge agents[0].vif.clk);
+        chnl_ready_flags = this.get_chnl_ready_flags();
+        if($countones(chnl_ready_flags) <= 1) break;
+    end
+
+    $display("%s: stop 3 generators running", this.name);
+    -> this.gen_stop_e;
+    endtask
+
+    virtual task run_stop_callback();
+      $display("run_stop_callback enterred");
+
+      $display("%s: waiting DUT transfering all of data", this.name);
+      fork
+        wait(agents[0].vif.ch_margin == 'h20);
+        wait(agents[1].vif.ch_margin == 'h20);
+        wait(agents[2].vif.ch_margin == 'h20);
+      join
+      $display("%s: 3 channel fifos have transferred all data", this.name);
+
+      $display($sformatf("***************%s finished**************",this.name));
+      $finish();
+    endtask
   endclass: chnl_fifo_full_test
 
 endpackage

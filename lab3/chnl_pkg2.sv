@@ -8,7 +8,7 @@ package chnl_pkg2;
     bit rsp;
     local static int obj_id = 0;
     constraint cstr{
-      data.size inside {[4:8]};
+      soft data.size inside {[4:8]};
       foreach(data[i]) data[i] == 'hC000_0000 + (this.ch_id<<24) + (this.pkt_id<<8) + i;
       soft ch_id == 0;
       soft pkt_id == 0;
@@ -237,20 +237,20 @@ package chnl_pkg2;
 
 
     virtual function void do_config();
-      assert(gen[0].randomize() with {ntrans==100; data_nidles==0; pkt_nidles==1; data_size==8;})
+      assert(gen[0].randomize() with {ch_id==0; ntrans==100; data_nidles==0; pkt_nidles==1; data_size==8;})
         else $fatal("[RNDFAIL] gen[0] randomization failure!");
 
       // USER TODO 2.2
       // To randomize gen[1] with
       // ntrans==50, data_nidles inside [1:2], pkt_nidles inside [3:5],
       // data_size == 6
-      assert(gen[1].randomize() with {ntrans==50; data_nidles inside [1:2], pkt_nidles inside [3:5]; data_size==6;})
+      assert(gen[1].randomize() with {ch_id==1; ntrans==50; data_nidles inside {[1:2]}; pkt_nidles inside {[3:5]}; data_size==6;})
         else $fatal("[RNDFAIL] gen[1] randomization failure!");
 
       // USER TODO 2.3
       // ntrans==80, data_nidles inside [0:1], pkt_nidles inside [1:2],
       // data_size == 32
-      assert(gen[2].randomize() with {ntrans==80; data_nidles inside [0:1], pkt_nidles inside [1:2]; data_size==32;})
+      assert(gen[2].randomize() with {ch_id==2; ntrans==80; data_nidles inside {[0:1]}; pkt_nidles inside {[1:2]}; data_size==32;})
         else $fatal("[RNDFAIL] gen[2] randomization failure!");
     endfunction
   endclass
@@ -271,7 +271,7 @@ package chnl_pkg2;
     virtual function void do_config();
     super.do_config();
     foreach(gen[i]) begin
-        assert(gen[i].randomize() with {ntrans inside [80:100]; data_nidles==0;pkt_nidles==0; pkt_nidles==1; data_size inside {8,12,32};})
+        assert(gen[i].randomize() with {ntrans inside {[80:100]}; data_nidles==0;pkt_nidles==1; data_size inside {8,12,32};})
         else $fatal("[RNDFAIL] gen[%0d] randomization failure!",i);
     end
   endfunction
@@ -287,6 +287,14 @@ package chnl_pkg2;
       super.new(name);
     endfunction
     // USER TODO
+    virtual function void do_config();
+    super.do_config;
+    foreach(gen[i]) begin
+        assert(gen[i].randomize() with {ntrans inside {[800:1000]}; data_nidles==0;pkt_nidles==1; data_size inside {8,12,32};})
+        else $fatal("[RNDFAIL] gen[%0d] randomization failure!",i);
+    end
+  endfunction
+
   endclass: chnl_fifo_full_test
 
 endpackage
