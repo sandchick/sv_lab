@@ -11,9 +11,9 @@ package reg_pkg;
     constraint cstr {
       soft cmd inside {`WRITE, `READ, `IDLE};
       soft addr inside {`SLV0_RW_ADDR, `SLV1_RW_ADDR, `SLV2_RW_ADDR, `SLV0_R_ADDR, `SLV1_R_ADDR, `SLV2_R_ADDR};
-      addr[7:4]==0 && cmd==`WRITE -> soft data[31:6]==0;
+      addr[7:4]==0 && cmd==`WRITE -> data[31:6]==0;
       soft addr[7:5]==0;
-      addr[4]==1 -> soft cmd == `READ;
+      addr[4]==1 -> cmd == `READ;
     };
 
     function reg_trans clone();

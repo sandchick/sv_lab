@@ -1,0 +1,13 @@
+../MCDF/v0/param_def.v
+../MCDF/v0/formater.v
+../MCDF/v0/arbiter.v
+../MCDF/v0/mcdf.v
+../MCDF/v0/reg.v
+../MCDF/v0/slave_fifo.v
+./arb_pkg.sv
+./chnl_pkg.sv
+./tb.sv
+./fmt_pkg.sv
+./mcdf_pkg.sv
+./reg_pkg.sv
+./rpt_pkg.sv
