@@ -3,7 +3,7 @@
 //2017-11-09: V0.2 zhangshi   R&W register's reserved bit can't be wrote.
 //------------------------------------------------------------------------------------------------------------------------//
  
-   `include "param_def.v"
+   `include "../MCDF/v0/param_def.v"
    module ctrl_regs(	clk_i,
 						rstn_i,
 						cmd_i,
