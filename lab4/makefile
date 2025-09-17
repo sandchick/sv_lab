@@ -5,13 +5,22 @@ DEFINE_DSDB = +define+DUMP_FSDB
 #Simulation Timescale
 TIMESCALE = timescale=1ns/1ps
 
+#Testname
+TESTNAME = mcdf_data_consistence_basic_test
+
 all: gen_flist com dump_file sim verdi
 
 nverdi: gen_flist com dump_file sim 
 
 gen_flist:
 	find ../MCDF/v0/ -wholename "*.v" > filelist.f
-	find ./ -wholename "*.sv" >> filelist.f
+	echo "./rpt_pkg.sv" >> filelist.f
+	echo "./arb_pkg.sv" >> filelist.f
+	echo "./chnl_pkg.sv" >> filelist.f
+	echo "./reg_pkg.sv" >> filelist.f
+	echo "./fmt_pkg.sv" >> filelist.f
+	echo "./mcdf_pkg.sv" >> filelist.f
+	echo "./tb.sv" >> filelist.f
 
 com:
 	$(VCS) +v2k -sverilog \

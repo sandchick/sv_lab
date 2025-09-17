@@ -1,6 +1,10 @@
 `timescale 1ns/1ps
 
-`include "param_def.v"
+`include "../MCDF/v0/param_def.v"
+
+//typedef package reg_pkg;
+//typedef package fmt_pkg;
+//typedef package mcdf_pkg;
 
 interface chnl_intf(input clk, input rstn);
   logic [31:0] ch_data;

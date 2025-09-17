@@ -1,5 +1,5 @@
 global env
 set fsdbname wave
 fsdbDumpfile "$fsdbname.fsdb" 
-fsdbDumpvars 0 "tb3" 
+fsdbDumpvars 0 "" 
 run

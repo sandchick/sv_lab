@@ -1,4 +1,4 @@
-`include "param_def.v"
+`include "../MCDF/v0/param_def.v"
 
 package reg_pkg;
 
